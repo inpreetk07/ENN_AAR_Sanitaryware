@@ -1,0 +1,23 @@
+﻿
+# Build files
+bin/
+obj/
+.vs/
+
+# User-specific files
+*.user
+*.suo
+
+# Local configuration and secrets
+appsettings.Development.json
+
+# Publish output
+publish/
+# Local database files
+*.db
+*.sqlite
+*.mdf
+*.ldf
+
+# User secrets
+secrets.json
