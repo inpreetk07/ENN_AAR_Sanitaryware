@@ -21,3 +21,9 @@ publish/
 
 # User secrets
 secrets.json
+
+# Production secrets (database + admin password)
+appsettings.Production.json
+
+# Login-cookie encryption keys
+App_Data/

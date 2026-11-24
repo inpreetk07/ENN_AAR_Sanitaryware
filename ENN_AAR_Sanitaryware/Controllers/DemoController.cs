@@ -6,7 +6,8 @@ namespace ENN_AAR_Sanitaryware.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            // There is no Demo view; send visitors to the homepage instead of an error page.
+            return RedirectToAction("Index", "Home");
         }
     }
 }

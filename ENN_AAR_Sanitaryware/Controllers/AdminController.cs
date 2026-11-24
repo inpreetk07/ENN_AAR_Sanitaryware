@@ -35,14 +35,16 @@ namespace ENN_AAR_Sanitaryware.Controllers
         public async Task<IActionResult> Login(string username, string password)
         {
             var result = await _signInManager.PasswordSignInAsync(
-                username, password, false, false);
+                username, password, false, lockoutOnFailure: true);
 
             if (result.Succeeded)
             {
                 return RedirectToAction("Dashboard");
             }
 
-            ViewBag.Error = "Invalid username or password.";
+            ViewBag.Error = result.IsLockedOut
+                ? "Too many failed attempts. Please try again in 15 minutes."
+                : "Invalid username or password.";
             return View();
         }
 
