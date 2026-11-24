@@ -1,0 +1,46 @@
+name: Deploy to Somee
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      clean:
+        description: "Delete everything on the server first (only for the very first deploy - also deletes uploaded product images!)"
+        type: boolean
+        default: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish
+        run: >
+          dotnet publish ENN_AAR_Sanitaryware/ENN_AAR_Sanitaryware.csproj
+          -c Release -o publish
+          --self-contained false
+          -p:SatelliteResourceLanguages=en
+
+      # appsettings.Production.json is not in Git (it holds passwords),
+      # so it is created here from the PROD_APPSETTINGS secret.
+      - name: Add production settings
+        env:
+          PROD_APPSETTINGS: ${{ secrets.PROD_APPSETTINGS }}
+        run: printf '%s' "$PROD_APPSETTINGS" > publish/appsettings.Production.json
+
+      - name: Upload to Somee (only changed files)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ennaarsanitaryware.somee.com
+          username: kInpreet_294
+          password: ${{ secrets.SOMEE_FTP_PASSWORD }}
+          protocol: ftp
+          local-dir: ./publish/
+          server-dir: www.ennaarsanitaryware.somee.com/
+          dangerous-clean-slate: ${{ github.event.inputs.clean == 'true' }}
